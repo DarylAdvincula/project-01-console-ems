@@ -1,6 +1,6 @@
 namespace ConsoleEMS.Utils;
 
-public class Table
+public class Table<T>
 {
     public char SideX { get; set; } = '┃';
     public char SideY { get; set; } = '━';
@@ -13,36 +13,42 @@ public class Table
     public char VertexTopRight { get; set; } = '┓';
     public char VertexBottomLeft { get; set; } = '┗';
     public char VertexBottomRight { get; set; } = '┛';
-    public List<Column> Columns { get; set; } = [];
-    public List<Row> Rows { get; set; } = [];
+    public List<Column<T>> Columns { get; set; } = [];
+    public List<Row<T>> Rows { get; set; } = [];
 
     private Table() {}
 
-    public static Table Build()
+    public static Table<T> Build()
     {
-        return new Table();
+        return new Table<T>();
     }
 
-    public Table SetColumns(List<Column> columns)
+    public Table<T> SetRows(List<T> items, Func<T, List<string>> rowValuesCallback)
     {
-        Columns = columns;
+        items.ForEach(i => Rows.Add(new Row<T>(rowValuesCallback(i))));
         return this;
     }
 
-    public Table SetRows(List<Row> rows)
+    public Table<T> AddColumn(string name, int? width = null)
     {
-        Rows = rows;
+        Columns.Add(new Column<T>(name, width));
         return this;
     }
 
-    public Table WithSides(char x, char y)
+    public Table<T> AddRow(List<string> values)
+    {
+        Rows.Add(new Row<T>(values));
+        return this;
+    }
+
+    public Table<T> WithSides(char x, char y)
     {
         SideX = x;
         SideY = y;
         return this;
     }
 
-    public Table WithVertices(
+    public Table<T> WithVertices(
         char left,
         char top, 
         char right,
@@ -68,12 +74,12 @@ public class Table
 
     public void Display()
     {
-        Column.Display(this);
-        Row.DisplayAll(this);
+        Column<T>.Display(this);
+        Row<T>.DisplayAll(this);
     }
 }
 
-public class Column
+public class Column<T>
 {
     public string Name;
     public int Width;
@@ -84,7 +90,7 @@ public class Column
         Width = width ?? name.Length;
     }
 
-    private static string GenerateTopBorder(Table table)
+    private static string GenerateTopBorder(Table<T> table)
     {
         var index = 0;
         var result = string.Empty;
@@ -110,7 +116,7 @@ public class Column
         return result;
     }
 
-    private static string GenerateNames(Table table)
+    private static string GenerateNames(Table<T> table)
     {
         var index = 0;
         var result = string.Empty;
@@ -134,7 +140,7 @@ public class Column
         return result;
     }
 
-    private static string GenerateBottomBorder(Table table)
+    private static string GenerateBottomBorder(Table<T> table)
     {
         var index = 0;
         var result = string.Empty;
@@ -160,7 +166,7 @@ public class Column
         return result;
     }
 
-    public static void Display(Table table)
+    public static void Display(Table<T> table)
     {
         Console.Write(
             GenerateTopBorder(table) +
@@ -170,7 +176,7 @@ public class Column
     }
 }
 
-public class Row
+public class Row<T>
 {
     private List<string> Values = new();
     
@@ -179,7 +185,7 @@ public class Row
         Values = values;
     }
 
-    private static string GenerateValue(Table table, Row row)
+    private static string GenerateValue(Table<T> table, Row<T> row)
     {
         var widths = table.Columns
             .Select((column) => column.Width)
@@ -205,7 +211,7 @@ public class Row
         return result;
     }
 
-    private static string GenerateBottomBorder(Table table)
+    private static string GenerateBottomBorder(Table<T> table)
     {
         var index = 0;
         var result = string.Empty;
@@ -231,7 +237,7 @@ public class Row
         return result;
     }
 
-    public static void DisplayAll(Table table)
+    public static void DisplayAll(Table<T> table)
     {
         var rows = table.Rows;
 

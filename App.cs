@@ -31,16 +31,14 @@ public class App
 
         while (running)
         {
-            Table.Build()
-                .SetColumns([new Column("Employee Management System: Week 1 Task - Retrieval", 154)])
-                .SetRows([
-                    new Row(["1. View Employees"]),
-                    new Row(["2. Search Employees"]),
-                    new Row(["3. Create Employee"]),
-                    new Row(["4. Edit Employee"]),
-                    new Row(["5. Delete Employee"]),
-                    new Row(["6. Exit"]),
-                ])
+            Table<string>.Build()
+                .AddColumn("Employee Management System: Week 1 Task - Retrieval", 154)
+                .AddRow(["1. View Employees"])
+                .AddRow(["2. Search Employees"])
+                .AddRow(["3. Create Employee"])
+                .AddRow(["4. Edit Employee"])
+                .AddRow(["5. Delete Employee"])
+                .AddRow(["6. Exit"])
                 .Display();
             Console.Write("Choice: ");
 

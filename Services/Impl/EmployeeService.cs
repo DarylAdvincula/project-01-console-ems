@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using ConsoleEMS.Dal;
 using ConsoleEMS.Models;
 using ConsoleEMS.Services.Inter;
@@ -16,10 +15,7 @@ public class EmployeeService : IEmployeeService
         _context = context;
     }
 
-    public async Task<ICollection<Employee>> GetAll(
-        string? search,
-        bool print = false
-    )
+    public async Task<ICollection<Employee>> GetAll(string? search, bool print = false)
     {
         IQueryable<Employee> employeesQuery = _context.Employees;
 
@@ -44,75 +40,64 @@ public class EmployeeService : IEmployeeService
 
         if (print)
         {
-            Table.Build()
-                .SetColumns([
-                    new Column("Id", 3),
-                    new Column("Employee No."),
-                    new Column("First Name", 14),
-                    new Column("Last Name", 14),
-                    new Column("Birthdate", 12),
-                    new Column("Age"),
-                    new Column("Hours Worked"),
-                    new Column("Wage", 9),
-                    new Column("Hourly Rate"),
-                    new Column("Email", 37),
+            Table<Employee>.Build()
+                .AddColumn("Id", 3)
+                .AddColumn("Employee No.")
+                .AddColumn("First Name", 14)
+                .AddColumn("Last Name", 14)
+                .AddColumn("Birthdate", 12)
+                .AddColumn("Age")
+                .AddColumn("Hours Worked")
+                .AddColumn("Wage", 9)
+                .AddColumn("Hourly Rate")
+                .AddColumn("Email", 37)
+                .SetRows(employees, employee => [
+                    employee.Id.ToString(),
+                    employee.EmployeeNumber,
+                    employee.FirstName,
+                    employee.LastName,
+                    employee.BirthDate.ToString("MM-dd-yyyy"),
+                    employee.Age.ToString(),
+                    employee.HoursWorked.ToString(),
+                    employee.Wage.ToString("C2"),
+                    employee.HourlyRate.ToString("C2"),
+                    employee.Email
                 ])
-                .SetRows(
-                    employees.Select(e => new Row([
-                        e.Id.ToString(),
-                        e.EmployeeNumber,
-                        e.FirstName,
-                        e.LastName,
-                        e.BirthDate.ToString("MM-dd-yyyy"),
-                        e.Age.ToString(),
-                        e.HoursWorked.ToString(),
-                        e.Wage.ToString("C2"),
-                        e.HourlyRate.ToString("C2"),
-                        e.Email
-                    ])).ToList()
-                )
                 .Display();
         }
         
         return employees;
     }
 
-    public async Task<Employee?> Get(
-        int id, 
-        bool print = false
-    )
+    public async Task<Employee?> Get(int id, bool print = false)
     {
         var employee = await _context.Employees
             .FirstOrDefaultAsync(e => e.Id == id);
         
         if (print && employee != null)
         {
-            Table.Build()
-                .SetColumns([
-                    new Column("Id", 3),
-                    new Column("Employee No."),
-                    new Column("First Name", 14),
-                    new Column("Last Name", 14),
-                    new Column("Birthdate", 12),
-                    new Column("Age"),
-                    new Column("Hours Worked"),
-                    new Column("Wage", 9),
-                    new Column("Hourly Rate"),
-                    new Column("Email", 37),
-                ])
-                .SetRows([
-                    new Row([
-                        employee.Id.ToString(),
-                        employee.EmployeeNumber,
-                        employee.FirstName,
-                        employee.LastName,
-                        employee.BirthDate.ToString("MM-dd-yyyy"),
-                        employee.Age.ToString(),
-                        employee.HoursWorked.ToString(),
-                        employee.Wage.ToString("C2"),
-                        employee.HourlyRate.ToString("C2"),
-                        employee.Email
-                    ])
+            Table<Employee>.Build()
+                .AddColumn("Id", 3)
+                .AddColumn("Employee No.")
+                .AddColumn("First Name", 14)
+                .AddColumn("Last Name", 14)
+                .AddColumn("Birthdate", 12)
+                .AddColumn("Age")
+                .AddColumn("Hours Worked")
+                .AddColumn("Wage", 9)
+                .AddColumn("Hourly Rate")
+                .AddColumn("Email", 37)
+                .AddRow([
+                    employee.Id.ToString(),
+                    employee.EmployeeNumber,
+                    employee.FirstName,
+                    employee.LastName,
+                    employee.BirthDate.ToString("MM-dd-yyyy"),
+                    employee.Age.ToString(),
+                    employee.HoursWorked.ToString(),
+                    employee.Wage.ToString("C2"),
+                    employee.HourlyRate.ToString("C2"),
+                    employee.Email
                 ])
                 .Display();
         }
